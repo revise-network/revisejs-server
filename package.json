@@ -1,6 +1,6 @@
 {
   "name": "revisejs-server",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "ReviseJS server. Dynamic NFT backend.",
   "author": "Revise Network",
   "license": "ISC",
@@ -20,7 +20,7 @@
   "homepage": "https://docs.revise.network",
   "main": "./dist/init.js",
   "scripts": {
-    "postinstall": "prisma generate",
+    "postinstall": "npx prisma generate",
     "dev": "cross-env NODE_ENV=development nodemon",
     "build": "swc src -d dist --source-maps --copy-files",
     "build:tsc": "tsc && tsc-alias",
