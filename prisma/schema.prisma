@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")
+}
+
+model Collection {
+  id String @default(uuid()) @id
+  collectionName String?
+  collectionURI String
+  infoId String @unique
+  info CollectionInfo @relation(fields: [infoId], references: [id])
+  nfts NFT[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CollectionInfo {
+  id String @default(uuid()) @id
+  collection Collection?
+  collectionName String?
+  collectionURI String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NFT {
+  id String @default(uuid()) @id
+  format String
+  tokenId String?
+  name String?
+  image String?
+  description String?
+  metaData String?
+  revisions NFTRevision[]
+  collectionId String?
+  collection Collection? @relation(fields: [collectionId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+// metaData -> name, description, image, properties
+// format -> ERC721, ERC1155, SOLANA, ETC.
+
+model NFTRevision {
+  id String @default(uuid()) @id
+  nft NFT @relation(fields: [nftId], references: [id])
+  nftId String
+  tokenId String?
+  name String?
+  image String?
+  description String?
+  metaData String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

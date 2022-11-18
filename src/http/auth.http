@@ -1,0 +1,28 @@
+# baseURL
+@baseURL = http://localhost:3000/auth
+
+###
+# User Register
+POST {{ baseURL }}/register
+Content-Type: application/json
+{
+    "email": "example@email.com"
+}
+
+###
+# User Login
+POST {{ baseURL }}/login
+Content-Type: application/json
+
+{
+    "email": "example@email.com"
+}
+
+###
+# User Logout
+POST {{ baseURL }}/validate
+Content-Type: application/json
+
+{
+    "magicLinkId": "1ce243f0-19c5-46d3-9959-20fbdeeab0fa"
+}
