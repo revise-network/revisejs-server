@@ -4,6 +4,20 @@
   "description": "ReviseJS server. Dynamic NFT backend.",
   "author": "Revise Network",
   "license": "ISC",
+  "keywords": [
+    "ReviseJS",
+    "revisejs-server",
+    "evm",
+    "NFT",
+    "metadata",
+    "DNFT",
+    "dynamic",
+    "nft"
+  ],
+  "bugs": {
+    "url": "https://github.com/revise-network/revisejs-server/issues"
+  },
+  "homepage": "https://docs.revise.network",
   "main": "./dist/init.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon",
