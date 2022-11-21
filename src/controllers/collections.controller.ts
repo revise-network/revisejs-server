@@ -69,13 +69,19 @@ class CollectionsController {
 
       let { perPage, pageNumber }: Pagination = req.query || {};
       let per_page: number = (perPage || 10) > 50 ? 50 : (perPage || 10);
-      const noOfRecordsToSkip: number = (pageNumber || 0) * per_page;
+      const noOfRecordsToSkip: number = (pageNumber-1 || 0) * per_page;
       const noOfRecordsToTake: number = Number(per_page);
       const collections = await collection.findMany({
+        orderBy: { createdAt: 'desc' },
         skip: noOfRecordsToSkip,
         take: noOfRecordsToTake
       });
-      return res.status(200).send(collections);
+      return res.status(200).send({
+        pageSize: per_page,
+        currentPage: pageNumber,
+        totalPages: await collection.count(),
+        data:collections
+      });
     } catch (error) {
       return res.sendStatus(500);
     }
@@ -115,7 +121,7 @@ class CollectionsController {
 
     let { perPage, pageNumber }: Pagination = req.query || {};
     let per_page: number = (perPage || 10) > 50 ? 50 : (perPage || 10);
-    const noOfRecordsToSkip: number = (pageNumber || 0) * per_page;
+    const noOfRecordsToSkip: number = (pageNumber-1 || 0) * per_page;
     const noOfRecordsToTake: number = Number(per_page);
     try {
       const nfts = await nFT.findMany({
@@ -135,10 +141,15 @@ class CollectionsController {
             },
           },
         },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' },
       });
 
-      return res.status(200).send(nfts);
+      return res.status(200).send({
+        pageSize: per_page,
+        currentPage: pageNumber,
+        totalPages: await nFT.count(),
+        data:nfts
+      });
     } catch (error) {
       return res.sendStatus(500);
     }

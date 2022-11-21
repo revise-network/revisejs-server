@@ -157,7 +157,7 @@ class NFTsController {
           },
         },
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
     if (nftObj === undefined || nftObj === null) {
       return res.status(400).send({ code: 'MII', message: 'Invalid NFT id' });
@@ -174,7 +174,7 @@ class NFTsController {
 
       let { perPage, pageNumber }: Pagination = req.query || {};
       let per_page: number = (perPage || 10) > 50 ? 50 : (perPage || 10);
-      const noOfRecordsToSkip: number = (pageNumber || 0) * per_page;
+      const noOfRecordsToSkip: number = (pageNumber-1 || 0) * per_page;
       const noOfRecordsToTake: number = Number(per_page);
       const nfts = await nFT.findMany({
         skip: noOfRecordsToSkip,
@@ -192,9 +192,14 @@ class NFTsController {
             },
           },
         },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' },
       });
-      return res.send(nfts);
+      return res.send({
+        pageSize: per_page,
+        currentPage: pageNumber,
+        totalPages: await nFT.count(),
+        data:nfts
+      });
     } catch (error) {
       console.log(error);
       return res.sendStatus(500);
@@ -218,7 +223,7 @@ class NFTsController {
           },
         },
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (nftObj === undefined || nftObj === null) {
@@ -238,18 +243,32 @@ class NFTsController {
     if(appAuthVerification.status==false || appAuthVerification.isError )
         return res.status(403).send({ code: 'IAT', message: 'Invalid Auth Token' });
 
-    const nftObj = await nFT.findFirst({
-      where: { id: nftId },
-      include: {
-        revisions: { orderBy: { createdAt: 'desc' } },
-        collection: true,
-      },
+    let { perPage, pageNumber }: Pagination = req.query || {};
+    let per_page: number = (perPage || 10) > 50 ? 50 : (perPage || 10);
+    const noOfRecordsToSkip: number = (pageNumber-1 || 0) * per_page;
+    const noOfRecordsToTake: number = Number(per_page);
+
+    const nFTRevisionObj = await nFTRevision.findMany({
+      where: { nftId },
+      orderBy: { createdAt: 'desc' },
+      skip: noOfRecordsToSkip,
+      take: noOfRecordsToTake,
     });
 
-    if (nftObj === undefined || nftObj === null) {
+    if (nFTRevisionObj === undefined || nFTRevisionObj === null) {
       return res.status(400).send({ code: 'MII', message: 'Invalid NFT id' });
     }
-    return res.send(nftObj);
+
+    const nFTRevisionCounter = await nFTRevision.findMany({
+      where: { nftId }
+    });
+
+    return res.send({
+      pageSize: per_page,
+      currentPage: pageNumber,
+      totalPages: nFTRevisionCounter.length,
+      data:nFTRevisionObj
+    });
   };
 
   public fetchNFTRevisionsNoAuth = async (req: Request, res: Response) => {
@@ -257,36 +276,31 @@ class NFTsController {
     const { id: nftId } = req.params;
 
     let { perPage, pageNumber }: Pagination = req.query || {};
-      let per_page: number = (perPage || 10) > 50 ? 50 : (perPage || 10);
-      const noOfRecordsToSkip: number = (pageNumber || 0) * per_page;
-      const noOfRecordsToTake: number = Number(per_page);
+    let per_page: number = (perPage || 10) > 50 ? 50 : (perPage || 10);
+    const noOfRecordsToSkip: number = (pageNumber-1 || 0) * per_page;
+    const noOfRecordsToTake: number = Number(per_page);
     
-    const nftObj = await nFT.findFirst({
-      where: { id: nftId },
-      include: {
-        revisions: {
-          skip: 0,
-          take: 1,
-          orderBy: { createdAt: 'desc' }
-        },
-        _count: {
-          select: {
-            revisions: true,
-          },
-        }
-      }
+    const nftObj = await nFTRevision.findMany({
+      where: { nftId },
+      orderBy: { createdAt: 'desc' },
+      skip: noOfRecordsToSkip,
+      take: noOfRecordsToTake,
     });
 
     if (nftObj === undefined || nftObj === null) {
       return res.status(400).send({ code: 'MII', message: 'Invalid NFT id' });
     }
+
+    const nFTRevisionCounter = await nFTRevision.findMany({
+      where: { nftId }
+    });
  
     return res.send({
-      ...nftObj, paginatedData: {
-        currentPage: noOfRecordsToSkip || 1,
-        noOfRecordsInCurrentPage: pageNumber ? noOfRecordsToTake : nftObj._count.revisions,
-        totalRecords: nftObj._count.revisions
-    }});
+      pageSize: per_page,
+      currentPage: pageNumber,
+      totalPages: nFTRevisionCounter.length,
+      data:nftObj
+    });
   };
 }
 
