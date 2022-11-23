@@ -79,7 +79,7 @@ class CollectionsController {
       return res.status(200).send({
         pageSize: per_page,
         currentPage: pageNumber,
-        totalPages: await collection.count(),
+        totalPages: Math.ceil(await collection.count()/per_page),
         data:collections
       });
     } catch (error) {
@@ -147,7 +147,7 @@ class CollectionsController {
       return res.status(200).send({
         pageSize: per_page,
         currentPage: pageNumber,
-        totalPages: await nFT.count(),
+        totalPages: Math.ceil(await nFT.count()/per_page),
         data:nfts
       });
     } catch (error) {

@@ -197,7 +197,7 @@ class NFTsController {
       return res.send({
         pageSize: per_page,
         currentPage: pageNumber,
-        totalPages: await nFT.count(),
+        totalPages: Math.ceil(await nFT.count()/per_page),
         data:nfts
       });
     } catch (error) {
@@ -266,7 +266,7 @@ class NFTsController {
     return res.send({
       pageSize: per_page,
       currentPage: pageNumber,
-      totalPages: nFTRevisionCounter.length,
+      totalPages: Math.ceil(nFTRevisionCounter.length/per_page),
       data:nFTRevisionObj
     });
   };
@@ -298,7 +298,7 @@ class NFTsController {
     return res.send({
       pageSize: per_page,
       currentPage: pageNumber,
-      totalPages: nFTRevisionCounter.length,
+      totalPages: Math.ceil(nFTRevisionCounter.length/per_page),
       data:nftObj
     });
   };
