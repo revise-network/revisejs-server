@@ -302,6 +302,15 @@ class NFTsController {
       data:nftObj
     });
   };
+
+  public addImage = async (req: Request, res: Response) => {
+    const appAuthVerification = await nftsHelperServiceObj.getappAuthObj(req.headers.authorization);
+
+    if(appAuthVerification.status==false || appAuthVerification.isError )
+        return res.status(403).send({ code: 'IAT', message: 'Invalid Auth Token' });
+
+    return res.sendStatus(200);
+  }
 }
 
 export default NFTsController;
